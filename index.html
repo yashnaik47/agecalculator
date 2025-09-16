@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .input-card {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            max-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid #d1d9e0;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .calculate-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .calculate-btn:hover {
+            background: #2980b9;
+        }
+
+        .results-card {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .results-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e8ed;
+            padding: 20px 24px;
+        }
+
+        .results-header h2 {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .main-result {
+            padding: 24px;
+            border-bottom: 1px solid #e1e8ed;
+            text-align: center;
+        }
+
+        .main-age {
+            font-size: 2.4em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .main-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 0;
+        }
+
+        .detail-item {
+            padding: 20px 24px;
+            border-right: 1px solid #e1e8ed;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .detail-item:last-child,
+        .detail-item:nth-child(3n) {
+            border-right: none;
+        }
+
+        .detail-item:nth-last-child(-n+3) {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .error {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 16px 20px;
+            border: 1px solid #fed7d7;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+            
+            .input-card {
+                padding: 24px 20px;
+            }
+            
+            .calculate-btn {
+                margin-left: 0;
+                margin-top: 12px;
+            }
+            
+            .main-age {
+                font-size: 2em;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .detail-item {
+                padding: 16px 20px;
+            }
+            
+            .detail-item:nth-child(2n) {
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-item {
+                border-right: none;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+        }
+
+        /* Dark mode styles */
+        body.dark {
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .dark .input-card,
+        .dark .results-card {
+            background: #161b22;
+            border-color: #30363d;
+        }
+
+        .dark .theme-toggle {
+            background: #161b22;
+            border-color: #30363d;
+            color: #c9d1d9;
+        }
+
+        .dark .theme-toggle:hover {
+            background: #21262d;
+        }
+
+        .dark .header h1 {
+            color: #f0f6fc;
+        }
+
+        .dark .header p {
+            color: #8b949e;
+        }
+
+        .dark label {
+            color: #f0f6fc;
+        }
+
+        .dark input[type="date"] {
+            background: #0d1117;
+            border-color: #30363d;
+            color: #c9d1d9;
+        }
+
+        .dark input[type="date"]:focus {
+            border-color: #58a6ff;
+        }
+
+        .dark .calculate-btn {
+            background: #238636;
+        }
+
+        .dark .calculate-btn:hover {
+            background: #2ea043;
+        }
+
+        .dark .results-header {
+            background: #0d1117;
+            border-color: #30363d;
+        }
+
+        .dark .results-header h2 {
+            color: #f0f6fc;
+        }
+
+        .dark .main-result {
+            border-color: #30363d;
+        }
+
+        .dark .main-age {
+            color: #f0f6fc;
+        }
+
+        .dark .main-subtitle {
+            color: #8b949e;
+        }
+
+        .dark .detail-item {
+            border-color: #30363d;
+        }
+
+        .dark .detail-label {
+            color: #8b949e;
+        }
+
+        .dark .detail-value {
+            color: #f0f6fc;
+        }
+
+        .dark .error {
+            background: #2d1b1e;
+            color: #f85149;
+            border-color: #f85149;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙 Dark</button>
+        
+        <div class="header">
+            <h1>Age Calculator</h1>
+            <p>Use our age calculator to calculate your exact age and see detailed breakdowns</p>
+        </div>
+
+        <div class="input-card">
+            <div class="form-group">
+                <label for="birthdate">Birth Date</label>
+                <input type="date" id="birthdate" name="birthdate">
+                <button class="calculate-btn" onclick="calculateAge()">Calculate</button>
+            </div>
+            <div id="error" class="error hidden"></div>
+        </div>
+
+        <div id="results" class="results-card hidden">
+            <div class="results-header">
+                <h2>Your Age</h2>
+            </div>
+            
+            <div class="main-result">
+                <div class="main-age" id="mainAge"></div>
+                <div class="main-subtitle">years, months, and days old</div>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Total Years</div>
+                    <div class="detail-value" id="totalYears"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Months</div>
+                    <div class="detail-value" id="totalMonths"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Weeks</div>
+                    <div class="detail-value" id="totalWeeks"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Days</div>
+                    <div class="detail-value" id="totalDays"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Hours</div>
+                    <div class="detail-value" id="totalHours"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Minutes</div>
+                    <div class="detail-value" id="totalMinutes"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Next Birthday</div>
+                    <div class="detail-value" id="nextBirthday"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Days Until Birthday</div>
+                    <div class="detail-value" id="daysUntilBirthday"></div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Born On</div>
+                    <div class="detail-value" id="dayOfWeekBorn"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-header">
+                <h2>About Age Calculation</h2>
+            </div>
+            <div class="info-content">
+                <h2>Age Calculator: The Ultimate Guide to Calculating Your Age Online</h2>
+<p>In today’s digital world, simple everyday tasks have become much easier thanks to online tools. One such tool that millions of people use regularly is an age calculator. Whether you’re filling out an application, planning retirement, checking eligibility for a service, or just curious about how many days you’ve lived so far, an age calculator provides an instant answer.</p>
+
+
+<h2>What is an Age Calculator?</h2>
+<p>An age calculator is a tool that calculates a person’s current age based on their date of birth and the current date. Instead of manually counting years, months, and days, you simply enter your birth date, and the calculator instantly tells you your exact age. Many modern date of birth and age calculators even go a step further. They don’t just display your age in years but also show it in months, weeks, days, hours, and even seconds.</p>
+
+
+<h2>Why Use an Age Calculation Calculator?</h2>
+<ul>
+<li><strong>Accuracy with leap years</strong> – Leap years can make manual calculations tricky. An age calculator factors this in automatically.</li>
+<li><strong>Exact age in days or months</strong> – Sometimes, you need more than just years. For example, age-based contests or legal requirements may need exact age in days.</li>
+<li><strong>Time-saving</strong> – Instead of doing math, you can calculate age using date of birth instantly online.</li>
+<li><strong>Versatility</strong> – Apart from personal use, professionals like doctors, teachers, HR recruiters, and even financial planners use age calculators.</li>
+</ul>
+
+
+<h2>How Does an Age Calculator Work?</h2>
+<p>The logic behind an age calculator is simple:</p>
+<ol>
+<li><strong>Input:</strong> You provide your date of birth.</li>
+<li><strong>Process:</strong> The calculator subtracts your birth date from today’s date.</li>
+<li><strong>Output:</strong> It shows your current age in years, months, and days.</li>
+</ol>
+<p>For example: Date of Birth: 20 March 1995 | Current Date: 16 September 2025 | Age: 30 years, 5 months, 27 days.</p>
+
+
+<h2>Different Types of Age Calculators</h2>
+<ul>
+<li><strong>Basic Age Calculator</strong> – Calculates your age in years, months, and days. Perfect for quick everyday use.</li>
+<li><strong>Birthday Calculator</strong> – Not only calculates your age but also tells you the day of the week you were born.</li>
+<li><strong>Date of Birth and Age Calculator</strong> – Lets you enter both your date of birth and another reference date.</li>
+<li><strong>Advanced Age Calculation Calculator</strong> – Provides detailed breakdowns: years, months, weeks, days, hours, minutes, and seconds lived.</li>
+</ul>
+
+
+<h2>How to Calculate Age Using Date of Birth (Manually)</h2>
+<p>Step 1: Subtract the years (Current Year – Birth Year = Age in years).<br>Step 2: Adjust for months and days (If the current month is earlier than your birth month, subtract one year. If the current day is earlier than your birth day, subtract one month).</p>
+<p>Example: DOB: 20 March 1995 | Current Date: 16 September 2025 → Result = 30 years, 5 months, 27 days.</p>
+
+
+<h2>Practical Uses of an Age Calculator</h2>
+<ul>
+<li>Legal Documents – Applying for a passport, visa, or government ID.</li>
+<li>Education – Schools and universities use it for admission eligibility.</li>
+<li>Employment – Recruiters verify if applicants meet age limits.</li>
+<li>Healthcare – Doctors need accurate age for prescriptions.</li>
+<li>Financial Planning – Insurance, retirement, and investment planning.</li>
+<li>Sports and Competitions – Age categories (under-18, under-21, etc.).</li>
+</ul>
+
+
+<h2>Benefits of Using an Online Birthday Calculator</h2>
+<ul>
+<li>Instant results – No manual math needed.</li>
+<li>Fun facts – Discover your birth weekday, zodiac sign, or countdown to your next birthday.</li>
+<li>Mobile friendly – Works on any device.</li>
+</ul>
+
+
+<h2>How Accurate Are Age Calculators?</h2>
+<p>Online age calculation calculators are highly accurate because they factor in leap years, use standardized date/time functions, and automatically update with today’s date. As long as you enter your date of birth correctly, the result is reliable.</p>
+
+
+<h2>Conclusion</h2>
+<p>An age calculator is more than just a simple math tool. From legal documents and healthcare to fun birthday facts, it has countless real-life applications. Instead of manually calculating years, months, and days, you can now calculate age using date of birth instantly with a date of birth calculator or a birthday calculator. These tools are reliable, fast, and user-friendly. Next time you’re curious about your exact age down to the day, skip the math — just use an age calculation calculator and get instant results!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateAge() {
+            const birthdateInput = document.getElementById('birthdate');
+            const errorDiv = document.getElementById('error');
+            const resultsDiv = document.getElementById('results');
+            
+            errorDiv.classList.add('hidden');
+            
+            if (!birthdateInput.value) {
+                showError('Please select your birth date');
+                return;
+            }
+            
+            const birthdate = new Date(birthdateInput.value);
+            const today = new Date();
+            
+            if (birthdate > today) {
+                showError('Birth date cannot be in the future');
+                return;
+            }
+            
+            if (birthdate.getFullYear() < 1900) {
+                showError('Please enter a valid birth date');
+                return;
+            }
+            
+            const ageComponents = calculateAgeComponents(birthdate, today);
+            const totalDays = Math.floor((today - birthdate) / (1000 * 60 * 60 * 24));
+            const totalWeeks = Math.floor(totalDays / 7);
+            const totalMonths = calculateTotalMonths(birthdate, today);
+            const totalHours = totalDays * 24;
+            const totalMinutes = totalHours * 60;
+            
+            const nextBirthday = calculateNextBirthday(birthdate, today);
+            const daysUntilBirthday = Math.floor((nextBirthday - today) / (1000 * 60 * 60 * 24));
+            
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayOfWeekBorn = daysOfWeek[birthdate.getDay()];
+            
+            document.getElementById('mainAge').textContent = 
+                `${ageComponents.years} years, ${ageComponents.months} months, ${ageComponents.days} days`;
+            document.getElementById('totalYears').textContent = ageComponents.years;
+            document.getElementById('totalMonths').textContent = totalMonths.toLocaleString();
+            document.getElementById('totalWeeks').textContent = totalWeeks.toLocaleString();
+            document.getElementById('totalDays').textContent = totalDays.toLocaleString();
+            document.getElementById('totalHours').textContent = totalHours.toLocaleString();
+            document.getElementById('totalMinutes').textContent = totalMinutes.toLocaleString();
+            document.getElementById('nextBirthday').textContent = formatDate(nextBirthday);
+            document.getElementById('daysUntilBirthday').textContent = daysUntilBirthday === 0 ? 'Today!' : daysUntilBirthday;
+            document.getElementById('dayOfWeekBorn').textContent = dayOfWeekBorn;
+            
+            resultsDiv.classList.remove('hidden');
+        }
+        
+        function calculateAgeComponents(birthdate, today) {
+            let years = today.getFullYear() - birthdate.getFullYear();
+            let months = today.getMonth() - birthdate.getMonth();
+            let days = today.getDate() - birthdate.getDate();
+            
+            if (days < 0) {
+                months--;
+                const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+            
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            return { years, months, days };
+        }
+        
+        function calculateTotalMonths(birthdate, today) {
+            return (today.getFullYear() - birthdate.getFullYear()) * 12 + (today.getMonth() - birthdate.getMonth());
+        }
+        
+        function calculateNextBirthday(birthdate, today) {
+            const nextBirthday = new Date(today.getFullYear(), birthdate.getMonth(), birthdate.getDate());
+            
+            if (nextBirthday < today) {
+                nextBirthday.setFullYear(today.getFullYear() + 1);
+            }
+            
+            return nextBirthday;
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+        }
+        
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2);
+            return `${day}/${month}/${year}`;
+        }
+        
+        document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
+        document.getElementById('birthdate').addEventListener('change', calculateAge);
+        
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.getElementById('themeToggle');
+            
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                themeToggle.textContent = '☀️ Light';
+            } else {
+                themeToggle.textContent = '🌙 Dark';
+            }
+        }
+    </script>
+</body>
+</html>
